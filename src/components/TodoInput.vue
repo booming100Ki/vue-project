@@ -1,59 +1,79 @@
 <template>
   <div class="inputBox shadow">
-    <input type="text" v-model="newTodoItem" placeholder="Type what you have to do" v-on:keyup.enter="addTodo">
+    <input type="text" v-model="newTodoItem" placeholder="Type what you have to do" v-on:keypress.enter="addTodo">
     <span class="addContainer" v-on:click="addTodo">
       <i class="addBtn fa fa-plus" aria-hidden="true"></i>
     </span>
+
+    <modal v-if="showModal" @close="showModal = false">
+      <h3 slot="header">경고</h3>
+      <span slot="footer" @click="showModal = false">할 일을 입력하세요.
+        <i class="closeModalBtn fa fa-times" aria-hidden="true"></i>
+      </span>
+    </modal>
   </div>
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        newTodoItem:''
+import Modal from './common/Modal.vue'
+
+export default {
+  data() {
+    return {
+      newTodoItem: '',
+      showModal: false
+    }
+  },
+  methods: {
+    addTodo() {
+      if (this.newTodoItem !== "") {
+        var value = this.newTodoItem && this.newTodoItem.trim();
+				this.$emit('addTodo', value)
+        this.clearInput();
+      } else {
+        this.showModal = !this.showModal;
       }
     },
-    methods: {
-      addTodo() {
-        localStorage.setItem(this.newTodoItem, this.newTodoItem);
-
-        if(this.newTodoItem !== "") {
-          const value = this.newTodoItem && this.newTodoItem.trim();
-          this.$emit('addTodo', value);
-          this.clearInput();
-        }
-      },
-      clearInput(){
-        this.newTodoItem = '';
-      }
+    clearInput() {
+      this.newTodoItem = '';
     }
+  },
+  components: {
+    Modal: Modal
   }
+}
 </script>
 
-<style>
-  input:foucs {
-    outline: none;
-  }
-  .inputBox {
-    background: white;
-    height: 50px;
-    line-height: 50px;
-    border-radius: 5px;
-  }
-  .inputBox input {
-    border-style: none;
-    font-size: 0.9rem;
-  }
-  .addContainer {
-    float: right;
-    background: linear-gradient(to right, #6478fb, #8763fb);
-    display: inline-block;
-    width: 3rem;
-    border-radius: 0 5px 5px 0;
-  }
-  .addBtn {
-    color: white;
-    vertical-align: middle;
-  }
+<style scoped>
+input:focus {
+  outline: none;
+}
+.inputBox {
+  position: relative;
+  padding: 0 60px 0 20px;
+  background: white;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 5px;
+}
+.inputBox input {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-style: none;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+.addContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: linear-gradient(to right, #6478FB, #8763FB);
+  width: 3rem;
+  border-radius: 0 5px 5px 0;
+}
+.addBtn {
+  color: white;
+  vertical-align: middle;
+}
 </style>
